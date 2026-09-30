@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Local Dev Assistant"
+description = "A privacy-first coding assistant that lets developers select local folders and files, explain code, generate tests, troubleshoot errors, and review fixes using a model running on their own machine."
+version = "1.0.0"
+id = "artifacts/local-dev-assistant"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 19417
+
+[services.development]
+run = "pnpm --filter @workspace/local-dev-assistant run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/local-dev-assistant", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/local-dev-assistant/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19417"
+BASE_PATH = "/"

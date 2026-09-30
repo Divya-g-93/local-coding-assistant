@@ -1,44 +1,48 @@
-# [Project name]
+# Local Dev Assistant
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A local-first coding assistant for explaining code, generating tests, troubleshooting errors, and reviewing proposed fixes without sending project files to cloud AI.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- `pnpm --filter @workspace/local-dev-assistant run dev:local` — run the app on `http://localhost:5173`
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- See `artifacts/local-dev-assistant/LOCAL_SETUP.md` for local Ollama setup.
+- Do not publish the preview as a substitute for local installation when the user requires end-to-end local operation.
 
 ## Stack
 
 - pnpm workspaces, Node.js 24, TypeScript 5.9
-- API: Express 5
-- DB: PostgreSQL + Drizzle ORM
-- Validation: Zod (`zod/v4`), `drizzle-zod`
-- API codegen: Orval (from OpenAPI spec)
-- Build: esbuild (CJS bundle)
+- Frontend: React + Vite
+- Model runtime: Ollama on the user's loopback interface
+- No app API, database, cloud AI provider, analytics, or remote file storage
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/local-dev-assistant/src/lib/local-files.ts` — browser-local file selection, indexing, and guarded writes
+- `artifacts/local-dev-assistant/src/lib/local-model.ts` — loopback-only Ollama connection, chat, and patch proposals
+- `artifacts/local-dev-assistant/LOCAL_SETUP.md` — local install and privacy setup
+- `artifacts/local-dev-assistant/src/App.tsx` and `src/index.css` — assistant interface
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- Source content is read by the browser and sent only to a loopback Ollama endpoint; model requests are disabled outside localhost.
+- Folder access is user-initiated. Generated changes must be reviewed and approved before a guarded local write.
+- The Replit preview is for UI development only and is not the secure local runtime.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+Developers can select local folders and files, ask for explanations, generate tests, troubleshoot errors, and review/apply proposed code fixes. Files and conversations remain in browser memory for the session.
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+- The assistant must run on each developer's local machine; source data must not be sent over the internet.
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- Ollama must allow the app's exact localhost origins in `OLLAMA_ORIGINS`; do not recommend `*`.
+- File selection does not imply every binary format is decoded. Unsupported binaries are attached with metadata only.
+- Keep the local model URL loopback-only and do not add hosted inference, remote logging, telemetry, or automatic code execution.
 
 ## Pointers
 
